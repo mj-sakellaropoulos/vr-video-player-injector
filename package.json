@@ -1,0 +1,28 @@
+{
+  "name": "webxr-video-player-injector",
+  "version": "0.0.1",
+  "description": "Play any HTML5 video in VR.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "web-ext",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "three": "^0.178.0",
+    "webxr-polyfill": "^2.0.3"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.44.2",
+    "web-ext-types": "^3.2.1"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "module",
+  "webExt": {
+    "sourceDir": "extension",
+    "artifactsDir": "artifacts"
+  }
+}

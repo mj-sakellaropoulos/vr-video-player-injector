@@ -1,0 +1,56 @@
+{
+	"manifest_version": 2,
+	"name": "webxr-video-player-injector",
+	"description": "Watch any HTML5 video in VR. Powered by THREE.js",
+	"version": "0.0.1",
+	"icons": {
+		"64": "icons/icon.png"
+	},
+	"permissions": [
+		"activeTab",
+		"tabs",
+		"<all_urls>"
+	],
+	"web_accessible_resources": [
+		"three.module.js",
+		"content_script.js"
+	],
+	"applications": {
+		"gecko": {
+			"id": "vr-video-injector@mjs.onl",
+			"strict_min_version": "91.0"
+		}
+	},
+	"background": {
+		"scripts": [
+			"background_script.js"
+		]
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"content_script.js"
+			]
+		}
+	],
+	"browser_action": {
+		"default_icon": {
+			"64": "icons/icon.png"
+		},
+		"default_popup": "browserAction/index.html",
+		"default_title": "webxr-video-player-injector"
+	},
+	"page_action": {
+		"default_icon": {
+			"64": "icons/icon.png"
+		},
+		"default_popup": "pageAction/index.html",
+		"default_title": "webxr-video-player-injector"
+	},
+	"options_ui": {
+		"page": "options/index.html"
+	}
+}
