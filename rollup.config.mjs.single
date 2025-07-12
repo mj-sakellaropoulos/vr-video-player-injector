@@ -1,0 +1,55 @@
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import terser from '@rollup/plugin-terser';
+import css from "rollup-plugin-import-css";
+
+export default [
+    {
+        watch: true,
+        input: './src/webvr/inject.js',
+        output: {
+            file: 'extension/background_script.js',
+            format: 'iife', // suitable for browser
+        },
+        plugins: [
+            css(),
+            resolve(),
+            commonjs(),
+            {
+                name: 'bundle-as-base64',
+                async generateBundle(_, bundle) {
+                    const { code } = Object.values(bundle).find((f) => f.isEntry);
+                    const b64 = Buffer.from(code).toString('base64');
+
+                    const bgCode = `
+  const B64 = '${b64}';
+
+chrome.browserAction.onClicked.addListener((tab) => {
+  chrome.tabs.executeScript(tab.id, {
+    code: \`
+      (function() {
+        const script = document.createElement('script');
+        script.src = 'data:text/javascript;base64,${b64}';
+        (document.head || document.documentElement).appendChild(script);
+      })();
+    \`,
+    runAt: 'document_idle'
+  });
+});
+`;
+
+
+                    this.emitFile({
+                        type: 'asset',
+                        fileName: 'background_script.js',
+                        source: bgCode,
+                    });
+
+                    // Optionally remove original entry chunk so it's not written separately
+                    delete bundle[Object.keys(bundle).find((k) => bundle[k].isEntry)];
+                }
+            }
+        ]
+    }
+]
+;

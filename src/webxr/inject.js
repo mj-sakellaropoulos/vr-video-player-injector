@@ -1,4 +1,5 @@
 import { log, err } from './helpers.js'
+import styles from "./injector.css"; /* import the styles as a string */
 
 var video = document.getElementsByTagName("video")[0];
 
@@ -16,10 +17,18 @@ let controls = {};
 let progressBar, barMaterial;
 
 if(!video){
+    console.log(init)
+    console.log(animate)
     log("No video, skipping injection.");
 }else{
+
+    const style = document.createElement('style');
+    style.textContent = styles;
+    document.head.appendChild(style);
+    log("Injected styles", null, style)
+
     polyfill = new WebXRPolyfill({
-        global: window.wrappedJSObject, //!!!!!!!!!!!!
+        global: window,
         webvr: true,
         cardboard: true,
         allowCardboardOnDesktop: true,
@@ -57,41 +66,85 @@ if(!video){
         }
     });
 
-    log("WebXRPolyfill instantiated.");
+    log("WebXRPolyfill instantiated." , "pre-init", polyfill);
     log("Video found: ", null, video);
 
     init();
     animate();
 }
 
+
+// Hello
+
 function init() {
+    log("Starting", "init");
 
-    log("Starting", "init")
-
-    video.play()
+    // Start video
+    video.play();
     videoTexture = new THREE.VideoTexture(video);
-    //videoTexture.colorSpace = THREE.SRGBColorSpace;
-    //videoTexture.minFilter = THREE.LinearFilter;
-    //videoTexture.magFilter = THREE.LinearFilter;
-    //videoTexture.format = THREE.RGBAFormat;
 
+    // Setup scene
     scene = new THREE.Scene();
-
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 1;
 
+    // Create renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.xr.enabled = true;
-    document.body.appendChild(renderer.domElement);
-    document.body.appendChild(VRButton.createButton(renderer));
+    renderer.domElement.classList.add("webgl");
 
-    // Skybox
+    // Create modal overlay container
+    const modal = document.createElement('div');
+    modal.id = 'vr-overlay-modal';
+
+    const canvasContainer = document.createElement('div');
+    canvasContainer.id = 'vr-canvas-container';
+
+    canvasContainer.appendChild(renderer.domElement);
+    modal.appendChild(canvasContainer);
+
+    // Add Start button
+    const startButton = document.createElement('button');
+    startButton.id = 'vr-start-button';
+    startButton.textContent = 'Enter VR';
+    startButton.onclick = () => {
+        modal.removeChild(startButton); // Remove button after click
+        document.body.appendChild(VRButton.createButton(renderer));
+    };
+    modal.appendChild(startButton);
+
+    // Add Close button
+    const closeButton = document.createElement('button');
+    closeButton.id = 'vr-close-button';
+    closeButton.textContent = 'Close';
+    startButton.onclick = async () => {
+        modal.removeChild(startButton);
+
+        try {
+            // 1. Request an immersive VR session (must be inside user gesture handler)
+            const session = await navigator.xr.requestSession("immersive-vr");
+
+            // 2. Attach session to renderer
+            await renderer.xr.setSession(session);
+
+            // 3. Optionally append the standard VRButton to allow exiting later
+            document.body.appendChild(VRButton.createButton(renderer));
+
+            // 4. (Optional) Resize renderer to full-window before session begins
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        } catch (err) {
+            console.error("Failed to start XR session:", err);
+        }
+    };
+
+    modal.appendChild(closeButton);
+
+    document.body.appendChild(modal);
+
+    // Background
     const loader = new THREE.TextureLoader();
-    const texture = loader.load([
-        'box.png',
-
-    ]);
+    const texture = loader.load('box.png');
     scene.background = texture;
 
     // Video Plane
@@ -115,6 +168,7 @@ function init() {
 
     window.addEventListener('resize', onWindowResize);
 }
+
 
 function createButton(label, x, y, onClick) {
     const canvas = document.createElement('canvas');

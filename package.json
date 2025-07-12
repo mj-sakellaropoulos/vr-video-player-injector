@@ -4,8 +4,10 @@
   "description": "Play any HTML5 video in VR.",
   "main": "main.js",
   "scripts": {
-    "dev": "web-ext",
-    "build": "vite build"
+    "wx": "web-ext",
+    "android": "node dev-android.js",
+    "desktop": "concurrently -k -n ROLLUP,WEBEXT -c yellow,cyan \"rollup -c -w\" \"web-ext run --target=firefox-desktop\"",
+    "build": "rollup -c ; web-ext build"
   },
   "dependencies": {
     "three": "^0.178.0",
@@ -15,7 +17,11 @@
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
+    "concurrently": "^9.2.0",
+    "dotenv-cli": "^8.0.0",
     "rollup": "^4.44.2",
+    "rollup-plugin-import-css": "^4.0.1",
+    "serve": "^14.2.4",
     "web-ext-types": "^3.2.1"
   },
   "author": "Your Name",
