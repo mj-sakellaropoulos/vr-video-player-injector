@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"name": "webxr-video-player-injector",
+	"name": "vr-video-player-injector",
 	"description": "Watch any HTML5 video in VR. Powered by THREE.js",
 	"version": "0.0.1",
 	"icons": {
@@ -41,7 +41,7 @@
 			"64": "icons/icon.png"
 		},
 		"default_popup": "browserAction/index.html",
-		"default_title": "webxr-video-player-injector"
+		"default_title": "vr-video-player-injector"
 	},
 	"options_ui": {
 		"page": "options/index.html"

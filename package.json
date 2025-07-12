@@ -1,5 +1,5 @@
 {
-  "name": "webxr-video-player-injector",
+  "name": "vr-video-player-injector",
   "version": "0.0.1",
   "description": "Play any HTML5 video in VR.",
   "main": "main.js",
