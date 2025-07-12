@@ -43,13 +43,6 @@
 		"default_popup": "browserAction/index.html",
 		"default_title": "webxr-video-player-injector"
 	},
-	"page_action": {
-		"default_icon": {
-			"64": "icons/icon.png"
-		},
-		"default_popup": "pageAction/index.html",
-		"default_title": "webxr-video-player-injector"
-	},
 	"options_ui": {
 		"page": "options/index.html"
 	}

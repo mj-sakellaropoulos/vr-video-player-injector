@@ -2,13 +2,12 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import css from 'rollup-plugin-import-css';
 import { Buffer } from 'node:buffer';
-import fs from 'fs';
 
-function buildInjector({ name, input }) {
+function injectorBundle(name, input, store) {
     return {
         input,
         output: {
-            file: `extension/__tmp__${name}.js`,
+            dir: 'extension/tmp', // output needed for Rollup internals, won’t be kept
             format: 'iife',
             name: `${name}_bundle`
         },
@@ -17,15 +16,11 @@ function buildInjector({ name, input }) {
             resolve(),
             commonjs(),
             {
-                name: 'bundle-base64-' + name,
+                name: 'collect-base64-' + name,
                 generateBundle(_, bundle) {
                     const chunk = Object.values(bundle).find(f => f.isEntry);
                     const b64 = Buffer.from(chunk.code).toString('base64');
-                    this.emitFile({
-                        type: 'asset',
-                        fileName: `__b64__${name}.js`,
-                        source: `export const ${name.toUpperCase()}_B64 = '${b64}';`
-                    });
+                    store[name.toUpperCase() + '_B64'] = b64;
                     delete bundle[chunk.fileName];
                 }
             }
@@ -33,23 +28,13 @@ function buildInjector({ name, input }) {
     };
 }
 
-// --- Generate background_script.js with both B64 vars ---
-function buildBackgroundScript() {
+function backgroundBundle(store) {
     return {
         name: 'generate-background-script',
-        buildStart() {
-            this.addWatchFile('extension/__b64__webxr.js');
-            this.addWatchFile('extension/__b64__webvr.js');
-        },
         generateBundle() {
-            const webxrB64 = fs.readFileSync('extension/__b64__webxr.js', 'utf-8')
-                .match(/'([^']+)'/)[1];
-            const webvrB64 = fs.readFileSync('extension/__b64__webvr.js', 'utf-8')
-                .match(/'([^']+)'/)[1];
-
-            const background = `
-const WEBXR_B64 = '${webxrB64}';
-const WEBVR_B64 = '${webvrB64}';
+            const bgScript = `
+const WEBXR_B64 = '${store.WEBXR_B64}';
+const WEBVR_B64 = '${store.WEBVR_B64}';
 
 chrome.runtime.onMessage.addListener((msg) => {
   const B64 = msg.type === 'webxr' ? WEBXR_B64 :
@@ -67,26 +52,30 @@ chrome.runtime.onMessage.addListener((msg) => {
     chrome.tabs.executeScript(tab.id, { code, runAt: 'document_idle' });
   });
 });
-`;
+      `.trim();
 
             this.emitFile({
                 type: 'asset',
                 fileName: 'background_script.js',
-                source: background.trim()
+                source: bgScript
             });
         }
     };
 }
 
+const b64Store = {};
+
 export default [
-    buildInjector({ name: 'webxr', input: 'src/webxr/inject.js' }),
-    buildInjector({ name: 'webvr', input: 'src/webvr/inject.js' }),
+    injectorBundle('webxr', 'src/webxr/inject.js', b64Store),
+    injectorBundle('webvr', 'src/webvr/inject.js', b64Store),
     {
-        input: 'noop.js', // can be any empty placeholder
+        input: 'noop.js', // dummy file (must exist but won't be emitted)
         output: {
             dir: 'extension',
             format: 'iife'
         },
-        plugins: [buildBackgroundScript()]
+        plugins: [
+            backgroundBundle(b64Store)
+        ]
     }
 ];
