@@ -107,38 +107,7 @@ function init(){
     log("Video attrs changed.")
 
 // WebVR Polyfill config
-    const config = {
-        ADDITIONAL_VIEWERS: [
-            {
-                id: 'Custom01',
-                label: 'Custom01',
-                fov: 60,
-                interLensDistance: 0.045,
-                baselineLensDistance: 0.035,
-                screenLensDistance: 0.039,
-                distortionCoefficients: [0.34, 0.55],
-                inverseCoefficients: [
-                    -0.33836704, -0.18162185, 0.862655, -1.2462051,
-                    1.0560602, -0.58208317, 0.21609078, -0.05444823, 0.009177956,
-                    -9.904169E-4, 6.183535E-5, -1.6981803E-6]
-            }
-        ],
-
-        DEFAULT_VIEWER: 'Custom01',
-        PROVIDE_MOBILE_VRDISPLAY: true,
-
-        //---Options passed into the underlying CardboardVRDisplay
-        MOBILE_WAKE_LOCK: true,
-        DEBUG: false,
-        DPDB_URL: 'https://storage.googleapis.com/cardboard-dpdb/dpdb.json',
-        K_FILTER: 0.98,
-        PREDICTION_TIME_S: 0.040,
-        CARDBOARD_UI_DISABLED: false, // Default: false
-        ROTATE_INSTRUCTIONS_DISABLED: true, // Default: false.
-        YAW_ONLY: false ,
-        BUFFER_SCALE: 1.0,
-        DIRTY_SUBMIT_FRAME_BINDINGS: false,
-    };
+    const config = window.VR_CONFIG;
 
     log("Adding polyfill");
     var polyfill = new WebVRPolyfill(config);
