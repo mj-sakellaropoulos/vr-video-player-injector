@@ -68,25 +68,32 @@ function init() {
     modal.appendChild(canvasContainer);
 
     // Add Start button
-    const startButton = document.createElement('button');
+    /*const startButton = document.createElement('button');
     startButton.id = 'vr-start-button';
     startButton.textContent = 'Enter VR';
     startButton.onclick = () => {
         modal.removeChild(startButton); // Remove button after click
         document.body.appendChild(VRButton.createButton(renderer));
     };
-    modal.appendChild(startButton);
+    modal.appendChild(startButton);*/
+
+    console.log("test1");
+    let vr_button = modal.appendChild(VRButton.createButton(renderer));
+    console.log("test2", vr_button);
 
     // Add Close button
     const closeButton = document.createElement('button');
     closeButton.id = 'vr-close-button';
     closeButton.textContent = 'Close';
-    startButton.onclick = async () => {
+
+    /*startButton.onclick = async () => {
         modal.removeChild(startButton);
 
         try {
             // 1. Request an immersive VR session (must be inside user gesture handler)
-            const session = await navigator.xr.requestSession("immersive-vr");
+            const session = await xr.requestSession("inline", {
+                optionalFeatures: ["local"],
+            });
 
             // 2. Attach session to renderer
             await renderer.xr.setSession(session);
@@ -99,7 +106,7 @@ function init() {
         } catch (err) {
             console.error("Failed to start XR session:", err);
         }
-    };
+    };*/
 
     modal.appendChild(closeButton);
 

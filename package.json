@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "wx": "web-ext",
+    "chrome": "rollup -c -w",
     "android": "node dev-android.js",
     "desktop": "concurrently -k -n ROLLUP,WEBEXT -c yellow,cyan \"rollup -c -w\" \"web-ext run --target=firefox-desktop\"",
     "build": "rollup -c ; web-ext build"

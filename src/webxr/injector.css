@@ -1,6 +1,6 @@
 #vr-overlay-modal {
     position: fixed;
-    z-index: 999999;
+    z-index: 998;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.95);
     display: flex;
@@ -15,7 +15,7 @@
 }
 #vr-start-button {
     position: absolute;
-    z-index: 1000000;
+    z-index: 999;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
@@ -31,7 +31,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 1000000;
+    z-index: 999;
     padding: 10px 20px;
     font-size: 14px;
     background-color: #cc3333;

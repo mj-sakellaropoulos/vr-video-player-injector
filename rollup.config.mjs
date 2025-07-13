@@ -2,6 +2,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import css from 'rollup-plugin-import-css';
 import { Buffer } from 'node:buffer';
+import {log,err} from './src/common/LogHelper.js'
+
+const deleteIntermediateBundles = true;
 
 /**
  * Creates a Rollup configuration object for a given injector script (WebXR or WebVR).
@@ -25,12 +28,16 @@ function injectorBundle(name, input, store) {
             resolve(),
             commonjs(),
             {
-                name: 'collect-base64-' + name,
+                name: `collect-base64-${name}`,
                 generateBundle(_, bundle) {
                     const chunk = Object.values(bundle).find(f => f.isEntry);
                     const b64 = Buffer.from(chunk.code).toString('base64');
                     store[name.toUpperCase() + '_B64'] = b64;
-                    delete bundle[chunk.fileName];
+                    log(`Generating bundle... found filename ${chunk.fileName}`, 'injectorBundle', `collect-base64-${name}`)
+                    if(deleteIntermediateBundles) {
+                        log(`Deleting ${chunk.fileName}`)
+                        delete bundle[chunk.fileName];
+                    }
                 }
             }
         ]
@@ -68,9 +75,9 @@ const b64Store = {};
 
 export default [
     // Bundle WebXR and WebVR Injection scripts as Base64
-    injectorBundle('webxr', 'src/webxr/inject.js', b64Store),
-    injectorBundle('webvr', 'src/webvr/inject.js', b64Store),
-    // Bundle the background_script, whcih contains injection logic.
+    injectorBundle('webxr', 'src/webxr/inject_xr.js', b64Store),
+    injectorBundle('webvr', 'src/webvr/inject_vr.js', b64Store),
+    // Bundle the browserAction script, which contains the injection logic.
     {
         input: 'src/extension/browserAction/browserAction.js',
         output: {
