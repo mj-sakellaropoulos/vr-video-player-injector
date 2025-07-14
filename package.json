@@ -2,7 +2,8 @@
   "name": "vr-video-player-injector",
   "version": "0.0.1",
   "description": "Play any HTML5 video in VR.",
-  "main": "main.js",
+  "main": "VRInjector.js",
+  
   "scripts": {
     "wx": "web-ext",
     "chrome": "rollup -c -w",
@@ -10,10 +11,12 @@
     "desktop": "concurrently -k -n ROLLUP,WEBEXT -c yellow,cyan \"rollup -c -w\" \"web-ext run --target=firefox-desktop\"",
     "build": "rollup -c ; web-ext build"
   },
+  
   "dependencies": {
     "three": "^0.178.0",
     "webxr-polyfill": "^2.0.3"
   },
+  
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
@@ -26,9 +29,11 @@
     "web-ext": "^8.8.0",
     "web-ext-types": "^3.2.1"
   },
-  "author": "Your Name",
-  "license": "MIT",
+  
+  "author": "Michael Sakellaropoulis",
+  "license": "AGPL-3.0-only",
   "type": "module",
+  
   "webExt": {
     "sourceDir": "extension",
     "artifactsDir": "artifacts"
